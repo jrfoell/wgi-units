@@ -63,7 +63,7 @@ function wgi_unit_init() {
 	register_taxonomy( 'wgi_class', array( 'wgi_unit_info' ), $class_args );
 
 	$year_labels = array(
-		'name'              => __( 'Years', 'wgi' ),
+		'name'              => __( 'Year', 'wgi' ),
 		'name_singular'     => __( 'Year', 'wgi' ),
 		'add_new_item'      => __( 'Add Year', 'wgi' ),
 		'edit_item'         => __( 'Edit Year', 'wgi' ),
@@ -88,36 +88,31 @@ function wgi_unit_init() {
 
 }
 
+/**
+ * Idea from:
+ * @see http://wordpress.stackexchange.com/questions/50077/display-a-custom-taxonomy-as-a-dropdown-on-the-edit-posts-page
+ */
 function wgi_dropdown_category( $post, $box ) {
 	$defaults = array( 'taxonomy' => 'category' );
-	$args = ( ! isset($box['args'] ) || ! is_array( $box['args'] ) ) ? array() : $box['args'];
+	$args = ( ! isset( $box['args'] ) || ! is_array( $box['args'] ) ) ? array() : $box['args'];
 
 	$r = wp_parse_args( $args, $defaults );
-    $tax_name = esc_attr( $r['taxonomy'] );
-    $taxonomy = get_taxonomy( $r['taxonomy'] );
-    ?>
-    <div id="taxonomy-<?php echo $tax_name; ?>" class="categorydiv">
-
-    <?php //took out tabs for most recent here ?>
-
-        <div id="<?php echo $tax_name; ?>-all">
-            <?php
-            $name = ( $tax_name == 'category' ) ? 'post_category' : 'tax_input[' . $tax_name . ']';
-            echo "<input type='hidden' name='{$name}[]' value='0' />"; // Allows for an empty term set to be sent. 0 is an invalid Term ID and will be ignored by empty() checks.
-            ?>
-            <ul id="<?php echo $tax_name; ?>checklist" data-wp-lists="list:<?php echo $tax_name; ?>" class="categorychecklist form-no-clear">
-                <?php //wp_terms_checklist( $post->ID, array( 'taxonomy' => $tax_name, 'popular_cats' => $popular_ids ) ); ?>
-            </ul>
-
-            <?php $term_obj = wp_get_object_terms($post->ID, $tax_name ); //_log($term_obj[0]->term_id) ?>
-            <?php wp_dropdown_categories( array( 'taxonomy' => $tax_name, 'hide_empty' => 0, 'name' => "{$name}[]", 'selected' => $term_obj[0]->term_id, 'orderby' => 'name', 'hierarchical' => 0, 'show_option_none' => "Select $tax_name" ) ); ?>
-
-        </div>
-    <?php if ( current_user_can( $taxonomy->cap->edit_terms ) ) : 
-            // removed code to add terms here dynamically, because doing so added a checkbox above the newly added drop menu, the drop menu would need to be re-rendered dynamically to display the newly added term ?>
-        <?php endif; ?>
-
-        <p><a href="<?php echo site_url(); ?>/wp-admin/edit-tags.php?taxonomy=<?php echo $tax_name ?>&post_type=YOUR_POST_TYPE">Add New</a></p>
-    </div>
-    <?php
+	$tax_name = esc_attr( $r['taxonomy'] );
+	$taxonomy = get_taxonomy( $r['taxonomy'] );
+	$name = ( $tax_name == 'category' ) ? 'post_category' : 'tax_input[' . $tax_name . ']';
+	?>
+	<div id="taxonomy-<?php echo $tax_name; ?>" class="categorydiv">
+		<div id="<?php echo $tax_name; ?>-all">
+			<?php
+			$term_obj = wp_get_object_terms( $post->ID, $tax_name );
+			$selected = null;
+			if ( is_array( $term_obj ) ) {
+				$one_term = current( $term_obj );
+				$selected = $one_term->name;
+			}
+			wp_dropdown_categories( array( 'taxonomy' => $tax_name, 'hide_empty' => false, 'name' => $name, 'value_field' => 'name', 'selected' => $selected, 'orderby' => 'name', 'hierarchical' => 0, 'show_option_none' => "Select {$taxonomy->label}" ) );
+			?>
+		</div>
+	</div>
+	<?php
 }
