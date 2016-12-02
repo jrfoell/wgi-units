@@ -15,3 +15,4 @@ define( 'WGI_PLUGIN_DIR', trailingslashit( dirname( __FILE__) ) );
 define( 'WGI_PLUGIN_URL', plugins_url( '/', __FILE__ ) );
 
 require_once WGI_PLUGIN_DIR . 'includes/post-types-taxonomies.php';
+require_once WGI_PLUGIN_DIR . 'includes/gf-customizations.php';
