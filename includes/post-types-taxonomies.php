@@ -106,7 +106,7 @@ function wgi_dropdown_category( $post, $box ) {
 			<?php
 			$term_obj = wp_get_object_terms( $post->ID, $tax_name );
 			$selected = null;
-			if ( is_array( $term_obj ) ) {
+			if ( is_array( $term_obj ) && ! empty( $term_obj ) ) {
 				$one_term = current( $term_obj );
 				$selected = $one_term->name;
 			}
