@@ -15,7 +15,7 @@ function populate_posts( $form ) {
 	$term_args = array(
 		'taxonomy'   => 'wgi_year',
 		'orderby'    => 'name',
-		'order'      => 'ASC',
+		'order'      => 'DESC',
 		'hide_empty' => false,
 		'number'     => 1,
 	);
